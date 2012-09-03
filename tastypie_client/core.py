@@ -259,8 +259,10 @@ class ListProxy(ResourceListMixin):
 class Api(object):
     """The TastyPie client"""
 
-    def __init__(self, service_url, auth=None, serializer=None):
+    def __init__(self, service_url, auth=None, serializer=None,
+            verify_ssl=True):
         self._auth = auth
+        self._verify_ssl = verify_ssl
         self._service = Service(service_url)
         self._serializer = JsonSerializer() if serializer is None \
                                     else serializer
@@ -333,7 +335,7 @@ class Api(object):
         """Do a HTTP GET request"""
 
         url = self._get_url(type, id, **kw)
-        response = requests.get(url, auth=self._auth)
+        response = requests.get(url, auth=self._auth, verify=self._verify_ssl)
         if response.status_code != 200:
             raise BadHttpStatus(response)
         raw_data = response.content
